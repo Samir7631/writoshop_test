@@ -4,12 +4,14 @@ import { Link } from "react-router-dom";
 import BookRail from "@/components/BookRail";
 import HeroCarousel from "@/components/HeroCarousel";
 import Reveal from "@/components/Reveal";
-import { books, categories } from "@/data/books";
+import { useCatalog } from "@/context/CatalogContext";
+import { categories } from "@/data/books";
 
 const categoryIcons = [Feather, GraduationCap, Palette, Tablet];
 const ticker = ["Story Books", "Learning Books", "Creative Books", "Instant Ebooks", "Fresh Picks", "Curated Shelves"];
 
 export default function Home() {
+  const { books } = useCatalog();
   const bestsellers = books.filter((book) => book.badge).slice(0, 7);
   const newBooks = [...books].reverse().slice(0, 7);
 

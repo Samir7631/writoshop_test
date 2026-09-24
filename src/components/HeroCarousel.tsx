@@ -2,24 +2,29 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import { books } from "@/data/books";
+import { useCatalog } from "@/context/CatalogContext";
 
 const slides = [
-  { eyebrow:"The WritoShop edit", title:"Stories worth staying up for.", copy:"Curated books for curious readers, creative kids and anyone who still loves the feeling of finding something unexpected.", cta:"Explore stories", to:"/products?category=Story%20Books", bookIds:["p1","p5","p9"], theme:"bg-[#3b1739] text-[#fff8ec]" },
-  { eyebrow:"Learn by wondering", title:"Big questions. Better pages.", copy:"Illustrated learning books that make science, nature and discovery feel less like homework and more like an adventure.", cta:"Shop learning", to:"/products?category=Learning%20Books", bookIds:["p2","p6","p10"], theme:"bg-[#0d5c63] text-white" },
-  { eyebrow:"Screen-free creativity", title:"Make a little mess on purpose.", copy:"Colour, doodle and create with books made for slow afternoons, busy hands and imagination without instructions.", cta:"Get creative", to:"/products?category=Colouring%20Books", bookIds:["p3","p7","p4"], theme:"bg-[#e96b4b] text-[#26120f]" },
+  { eyebrow:"The WritoShop edit", title:"Stories worth staying up for.", copy:"Curated books for curious readers, creative kids and anyone who still loves the feeling of finding something unexpected.", cta:"Explore stories", to:"/products?category=Story%20Books", category:"Story Books", theme:"bg-[#3b1739] text-[#fff8ec]" },
+  { eyebrow:"Learn by wondering", title:"Big questions. Better pages.", copy:"Illustrated learning books that make science, nature and discovery feel less like homework and more like an adventure.", cta:"Shop learning", to:"/products?category=Learning%20Books", category:"Learning Books", theme:"bg-[#0d5c63] text-white" },
+  { eyebrow:"Screen-free creativity", title:"Make a little mess on purpose.", copy:"Colour, doodle and create with books made for slow afternoons, busy hands and imagination without instructions.", cta:"Get creative", to:"/products?category=Colouring%20Books", category:"Colouring Books", theme:"bg-[#e96b4b] text-[#26120f]" },
 ];
 
 export default function HeroCarousel() {
+  const { books } = useCatalog();
   const [active, setActive] = useState(0);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setActive((value) => (value + 1) % slides.length), 5600);
+    const timer = window.setInterval(
+      () => setActive((value) => (value + 1) % slides.length),
+      5600,
+    );
     return () => window.clearInterval(timer);
   }, []);
 
   const slide = slides[active];
-  const slideBooks = slide.bookIds.map((id) => books.find((book) => book.id === id)).filter(Boolean);
+  const categoryBooks = books.filter((book) => book.category === slide.category);
+  const slideBooks = (categoryBooks.length >= 3 ? categoryBooks : books).slice(0, 3);
 
   return (
     <section className="relative overflow-hidden border-b border-border bg-background px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
@@ -43,7 +48,7 @@ export default function HeroCarousel() {
             </div>
 
             <div className="reveal-right relative mx-auto flex w-full max-w-2xl items-end justify-center gap-3 sm:gap-5 lg:justify-end">
-              {slideBooks.map((book, index) => book && (
+              {slideBooks.map((book, index) => (
                 <Link key={book.id} to={`/products/${book.id}`} className={`group relative w-[29%] max-w-[180px] ${index === 1 ? "bounce-soft -translate-y-8" : "float-slow"}`} style={{ animationDelay: `${index * 220}ms` }}>
                   <div className="book-shadow overflow-hidden rounded-xl border border-white/30 bg-white/10 p-2 backdrop-blur-sm transition-transform duration-500 group-hover:-translate-y-3 group-hover:rotate-2">
                     <img src={book.image} alt={book.title} className="aspect-[3/4] w-full rounded-lg object-cover" />

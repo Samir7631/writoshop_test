@@ -1,44 +1,78 @@
 # WritoShop Test
 
-Standalone Vercel test repository for the redesigned WritoShop frontend.
+Front-end prototype for the redesigned WritoShop storefront, authentication flow and role-based dashboards.
 
-## Stack
-- React 19
-- TypeScript
-- Vite
-- Tailwind CSS 4
-- React Router
-- Lucide icons
-- Google Identity Services (optional)
+## Current front-end scope
 
-## Local development
-```bash
-npm install
-npm run dev
-```
+### Storefront
+- Editorial animated home page
+- Search, categories and sorting
+- Book detail pages
+- Cart UI
+- Admin-managed catalogue stored in localStorage
+- Admin add/delete book controls
+- Stock editing reflected across the storefront
 
-## Production build
-```bash
-npm run build
-npm run preview
-```
+### Authentication prototype
+- Email/password demo login
+- Google Identity Services OAuth handoff
+- Persisted browser session
+- User/admin role separation
+- Protected routes
 
-## Vercel
-Import the repository into Vercel. The included `vercel.json` uses:
-- Build command: `npm run build`
-- Output directory: `dist`
+### User dashboard
+- Basic account details
+- Past and placed orders
+- Order status
+- Payment status
+- Refund status
 
-This project uses `HashRouter`, so no SPA rewrite rule is required for client-side routes.
+### Admin dashboard
+- Sales summary
+- Pending orders
+- Approve/advance orders
+- Payment controls
+- Refund controls
+- Stock management
+- Add/delete books
+- Storefront catalogue control
+
+## Prototype credentials
+
+User:
+- Email: `user@writoshop.com`
+- Password: `User@123`
+
+Admin:
+- Email: `admin@writoshop.com`
+- Password: `Admin@123`
+
+These credentials are intentionally client-side for the test build only. They are **not secure authentication** and must be replaced by backend auth before production.
 
 ## Google sign-in
-The login page includes Google Identity Services support.
 
 1. Create a Google OAuth 2.0 Web Client in Google Cloud Console.
-2. Add your Vercel deployment domain(s) under **Authorized JavaScript origins**.
-3. In Vercel, add an environment variable:
-   `VITE_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com`
-4. Redeploy.
+2. Add your Vercel deployment domain under **Authorized JavaScript origins**.
+3. In Vercel add:
+   - `VITE_GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com`
+4. Optional admin mapping for Google accounts:
+   - `VITE_ADMIN_EMAILS=admin@example.com,another-admin@example.com`
+5. Redeploy.
 
-Without the environment variable the Google option still appears in the UI, but shows setup guidance instead of starting OAuth.
+Google credentials are decoded client-side only for the prototype. Production must verify the credential server-side and issue a secure session.
 
-The Google credential callback is currently a front-end integration point. For a production login, verify the credential on your backend/auth provider and create a real application session.
+## Architecture prepared for backend phase
+
+The front end is intentionally split into replaceable contexts:
+- `AuthContext` → replace local session logic with authentication API/session cookies
+- `CommerceContext` → replace local order state with orders/payments/refunds API
+- `CatalogContext` → replace local catalogue/stock state with database-backed book APIs
+
+That lets the UI and route structure remain mostly intact when the backend and database are introduced.
+
+## Vercel
+
+- Framework: Vite
+- Build command: `npm run build`
+- Output directory: `dist`
+- Router: HashRouter

@@ -4,10 +4,12 @@ import { useSearchParams } from "react-router-dom";
 
 import BookCard from "@/components/BookCard";
 import Reveal from "@/components/Reveal";
-import { books, categories } from "@/data/books";
+import { useCatalog } from "@/context/CatalogContext";
+import { categories } from "@/data/books";
 import { cn } from "@/lib/utils";
 
 export default function Products() {
+  const { books } = useCatalog();
   const [searchParams, setSearchParams] = useSearchParams();
   const [sort, setSort] = useState("featured");
   const category = searchParams.get("category");
@@ -24,7 +26,7 @@ export default function Products() {
     if (sort === "high") return [...result].sort((a, b) => b.price - a.price);
     if (sort === "rating") return [...result].sort((a, b) => b.rating - a.rating);
     return result;
-  }, [category, query, sort]);
+  }, [books, category, query, sort]);
 
   const updateCategory = (value: string | null) => {
     const next = new URLSearchParams(searchParams);

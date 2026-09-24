@@ -23,7 +23,10 @@ export default function BookCard({ book }: { book: Book }) {
 
       <div className="flex flex-1 flex-col px-1 pt-4">
         <div className="flex items-center justify-between gap-3 text-[11px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
-          <span>{book.format}</span>
+          <span>
+            {book.format}
+            {book.format !== "Ebook" && ` · ${book.stock} left`}
+          </span>
           <span className="flex items-center gap-1 normal-case tracking-normal"><Star className="h-3.5 w-3.5 fill-accent text-accent" /> {book.rating}</span>
         </div>
         <Link to={`/products/${book.id}`} className="mt-2 line-clamp-2 font-display text-xl font-semibold leading-[1.08] tracking-[-0.025em] transition-colors group-hover:text-primary">{book.title}</Link>
@@ -33,7 +36,7 @@ export default function BookCard({ book }: { book: Book }) {
             <p className="font-display text-2xl font-semibold text-foreground">{formatPrice(book.price)}</p>
             <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">{book.inStock ? "In stock" : "Out of stock"}</p>
           </div>
-          <button type="button" onClick={() => addItem(book)} disabled={!book.inStock} className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-all duration-200 hover:-translate-y-1 hover:scale-105 hover:shadow-lg disabled:opacity-40" aria-label={`Add ${book.title} to cart`}>
+          <button type="button" onClick={() => addItem(book)} disabled={!book.inStock} className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-all duration-200 hover:-translate-y-1 hover:scale-105 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-40" aria-label={`Add ${book.title} to cart`}>
             <Plus className="h-4 w-4" />
           </button>
         </div>

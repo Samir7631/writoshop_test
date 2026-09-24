@@ -1,13 +1,25 @@
 import { FormEvent, useEffect, useState } from "react";
+import {
+  BookOpenText,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Search,
+  ShieldCheck,
+  ShoppingBag,
+  UserRound,
+  X,
+} from "lucide-react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { BookOpenText, Menu, Search, ShoppingBag, UserRound, X } from "lucide-react";
 
-import { categories } from "@/data/books";
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
+import { categories } from "@/data/books";
 import { cn } from "@/lib/utils";
 
 export default function Header() {
   const { totalItems } = useCart();
+  const { user, dashboardPath, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
   const location = useLocation();
@@ -19,6 +31,11 @@ export default function Header() {
     event.preventDefault();
     const value = query.trim();
     navigate(value ? `/products?q=${encodeURIComponent(value)}` : "/products");
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
   };
 
   return (
@@ -52,13 +69,39 @@ export default function Header() {
         </form>
 
         <div className="ml-auto flex items-center gap-2">
-          <Link to="/login" className="hidden items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-bold transition-all hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-sm md:flex">
-            <UserRound className="h-4 w-4" /> Sign in
-          </Link>
+          {user ? (
+            <>
+              <Link
+                to={dashboardPath}
+                className="hidden items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-bold transition-all hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-sm md:flex"
+              >
+                {user.role === "admin" ? (
+                  <ShieldCheck className="h-4 w-4" />
+                ) : (
+                  <LayoutDashboard className="h-4 w-4" />
+                )}
+                {user.role === "admin" ? "Admin" : "My account"}
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="hidden h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground md:flex"
+                aria-label="Log out"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </>
+          ) : (
+            <Link to="/login" className="hidden items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-sm font-bold transition-all hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-sm md:flex">
+              <UserRound className="h-4 w-4" /> Sign in
+            </Link>
+          )}
+
           <Link to="/cart" className="relative flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-lg" aria-label={`Cart with ${totalItems} items`}>
             <ShoppingBag className="h-[18px] w-[18px]" />
             {totalItems > 0 && <span className="pulse-ring absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-black text-accent-foreground ring-2 ring-background">{totalItems}</span>}
           </Link>
+
           <button type="button" onClick={() => setMobileOpen((value) => !value)} className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card lg:hidden" aria-label={mobileOpen ? "Close menu" : "Open menu"}>
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -76,6 +119,7 @@ export default function Header() {
             ))}
           </nav>
           <nav className="flex items-center gap-1">
+            {user && <NavLink to={dashboardPath} className="px-3 py-2 text-xs font-bold text-primary">{user.role === "admin" ? "Control room" : "Dashboard"}</NavLink>}
             <NavLink to="/about" className="px-3 py-2 text-xs font-bold text-muted-foreground hover:text-foreground">Our story</NavLink>
             <NavLink to="/contact" className="px-3 py-2 text-xs font-bold text-muted-foreground hover:text-foreground">Help</NavLink>
           </nav>
@@ -93,7 +137,16 @@ export default function Header() {
               <Link to="/" className="rounded-2xl bg-secondary px-4 py-3 text-sm font-bold">Home</Link>
               <Link to="/products" className="rounded-2xl bg-secondary px-4 py-3 text-sm font-bold">All books</Link>
               {categories.map((category) => <Link key={category.name} to={`/products?category=${encodeURIComponent(category.name)}`} className="rounded-2xl border border-border bg-card px-4 py-3 text-sm font-bold">{category.short}</Link>)}
-              <Link to="/login" className="rounded-2xl border border-border bg-card px-4 py-3 text-sm font-bold">Sign in</Link>
+              {user ? (
+                <>
+                  <Link to={dashboardPath} className="rounded-2xl border border-border bg-card px-4 py-3 text-sm font-bold">
+                    {user.role === "admin" ? "Admin dashboard" : "My dashboard"}
+                  </Link>
+                  <button type="button" onClick={handleLogout} className="rounded-2xl border border-border bg-card px-4 py-3 text-left text-sm font-bold">Log out</button>
+                </>
+              ) : (
+                <Link to="/login" className="rounded-2xl border border-border bg-card px-4 py-3 text-sm font-bold">Sign in</Link>
+              )}
               <Link to="/about" className="rounded-2xl border border-border bg-card px-4 py-3 text-sm font-bold">Our story</Link>
               <Link to="/contact" className="rounded-2xl border border-border bg-card px-4 py-3 text-sm font-bold">Help</Link>
             </nav>

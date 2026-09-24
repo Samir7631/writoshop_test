@@ -4,11 +4,13 @@ import { ArrowLeft, Check, Heart, QrCode, ShieldCheck, ShoppingBag, Sparkles, St
 
 import BookRail from "@/components/BookRail";
 import Reveal from "@/components/Reveal";
-import { books, formatPrice } from "@/data/books";
+import { useCatalog } from "@/context/CatalogContext";
+import { formatPrice } from "@/data/books";
 import { useCart } from "@/context/CartContext";
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const { books } = useCatalog();
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
   const book = books.find((item) => item.id === id);
@@ -46,7 +48,13 @@ export default function ProductDetail() {
             <div className="mt-8 rounded-[1.5rem] border border-border bg-card p-5 shadow-sm sm:p-6">
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div><p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Price</p><p className="mt-1 font-display text-4xl font-semibold">{formatPrice(book.price)}</p></div>
-                <p className="rounded-full bg-secondary px-3 py-2 text-xs font-extrabold text-primary">{book.inStock ? "In stock & ready" : "Out of stock"}</p>
+                <p className="rounded-full bg-secondary px-3 py-2 text-xs font-extrabold text-primary">
+                  {book.format === "Ebook"
+                    ? "Instant access"
+                    : book.inStock
+                      ? `${book.stock} in stock`
+                      : "Out of stock"}
+                </p>
               </div>
               <button onClick={handleAdd} disabled={!book.inStock} className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-4 text-sm font-extrabold text-primary-foreground shadow-lg transition-all hover:-translate-y-1 disabled:opacity-40">
                 {added ? <Check className="h-4 w-4" /> : <ShoppingBag className="h-4 w-4" />} {added ? "Added to basket" : "Add to basket"}

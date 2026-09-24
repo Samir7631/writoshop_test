@@ -22,11 +22,22 @@ type CatalogContextValue = {
 const STORAGE_KEY = "writoshop-catalog-v1";
 const CatalogContext = createContext<CatalogContextValue | undefined>(undefined);
 
+function normalizeBook(book: Book): Book {
+  const fallbackStock = book.format === "Ebook" ? 999 : 10;
+  const stock =
+    typeof book.stock === "number" && Number.isFinite(book.stock)
+      ? Math.max(0, book.stock)
+      : fallbackStock;
+
+  return { ...book, stock, inStock: stock > 0 };
+}
+
 function loadBooks() {
   if (typeof window === "undefined") return seedBooks;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Book[]) : seedBooks;
+    if (!raw) return seedBooks;
+    return (JSON.parse(raw) as Book[]).map(normalizeBook);
   } catch {
     return seedBooks;
   }
