@@ -76,3 +76,15 @@ That lets the UI and route structure remain mostly intact when the backend and d
 - Build command: `npm run build`
 - Output directory: `dist`
 - Router: HashRouter
+
+
+## UPI QR configuration
+
+Add these Vercel environment variables before accepting real payments:
+
+- `VITE_UPI_ID=your-real-merchant-upi-id`
+- `VITE_UPI_PAYEE_NAME=WritoShop`
+
+If `VITE_UPI_ID` is missing, the test build clearly shows that it is using a demo payment address.
+
+The QR is generated locally in the browser with `qrcode.react`. It includes the payee, exact amount and order reference. The current prototype does not automatically verify bank settlement; the customer submits the UTR and the admin confirms it in the admin dashboard. Backend-side payment verification/reconciliation comes in the next phase.
