@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { ArrowRight, Minus, Plus, QrCode, ShoppingBag, Trash2 } from "lucide-react";
 
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/data/books";
 
 export default function Cart() {
   const { items, updateQuantity, removeItem, totalPrice, clear } = useCart();
+  const { user } = useAuth();
 
   if (items.length === 0) {
     return <div className="mx-auto max-w-3xl px-4 py-24 text-center"><div className="bounce-soft mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-accent text-accent-foreground"><ShoppingBag className="h-7 w-7" /></div><h1 className="mt-6 font-display text-4xl font-semibold tracking-[-0.04em]">Your basket needs a book.</h1><p className="mt-3 text-sm text-muted-foreground">Pick something that earns a place on your shelf.</p><Link to="/products" className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-extrabold text-primary-foreground">Browse books <ArrowRight className="h-4 w-4" /></Link></div>;
@@ -40,10 +42,16 @@ export default function Cart() {
 
         <aside className="h-fit rounded-[1.7rem] bg-primary p-6 text-primary-foreground lg:sticky lg:top-40">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-primary-foreground/55">Order summary</p>
-          <div className="mt-5 space-y-3 text-sm"><div className="flex justify-between"><span className="text-primary-foreground/65">Subtotal</span><span className="font-bold">{formatPrice(totalPrice)}</span></div><div className="flex justify-between"><span className="text-primary-foreground/65">Digital delivery</span><span className="font-bold">Free</span></div></div>
+          <div className="mt-5 space-y-3 text-sm"><div className="flex justify-between"><span className="text-primary-foreground/65">Subtotal</span><span className="font-bold">{formatPrice(totalPrice)}</span></div><div className="flex justify-between"><span className="text-primary-foreground/65">UPI QR payment</span><span className="font-bold">No fee</span></div></div>
           <div className="mt-5 flex items-end justify-between border-t border-primary-foreground/15 pt-5"><span className="font-bold">Total</span><span className="font-display text-3xl font-semibold">{formatPrice(totalPrice)}</span></div>
-          <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-3.5 text-sm font-extrabold text-accent-foreground transition-transform hover:-translate-y-1">Checkout via UPI <ArrowRight className="h-4 w-4" /></button>
-          <p className="mt-4 text-center text-[10px] leading-5 text-primary-foreground/50">Checkout is a front-end preview until payment integration is connected.</p>
+          <Link to={user ? "/checkout" : "/login"} className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent px-5 py-3.5 text-sm font-extrabold text-accent-foreground transition-transform hover:-translate-y-1">
+            <QrCode className="h-4 w-4" />
+            {user ? "Pay with UPI QR" : "Sign in to pay"}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <p className="mt-4 text-center text-[10px] leading-5 text-primary-foreground/50">
+            Scan the QR, pay the exact amount, then submit your UPI reference.
+          </p>
         </aside>
       </div>
     </div>
