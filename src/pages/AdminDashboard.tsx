@@ -162,11 +162,18 @@ export default function AdminDashboard() {
                     </td>
                     <td className="py-4 font-semibold">{formatPrice(order.total)}</td>
                     <td className="py-4">{order.status}</td>
-                    <td className="py-4">{order.paymentStatus}</td>
+                    <td className="py-4">
+                      <p>{order.paymentStatus}</p>
+                      {order.paymentReference && (
+                        <p className="mt-1 max-w-[150px] break-all text-[10px] font-semibold text-muted-foreground">
+                          UTR: {order.paymentReference}
+                        </p>
+                      )}
+                    </td>
                     <td className="py-4">{order.refundStatus}</td>
                     <td className="py-4">
                       <div className="flex justify-end gap-2">
-                        {order.status === "Pending approval" && (
+                        {order.status === "Pending approval" && order.paymentStatus === "Paid" && (
                           <button
                             onClick={() => approveOrder(order.id)}
                             className="rounded-full bg-primary px-3 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-primary-foreground"
@@ -182,7 +189,7 @@ export default function AdminDashboard() {
                             Advance
                           </button>
                         )}
-                        {order.paymentStatus === "Pending" && (
+                        {["Pending", "Verification pending"].includes(order.paymentStatus) && (
                           <button
                             onClick={() => markPaymentPaid(order.id)}
                             className="rounded-full border border-border px-3 py-2 text-[10px] font-black uppercase tracking-[0.08em]"
