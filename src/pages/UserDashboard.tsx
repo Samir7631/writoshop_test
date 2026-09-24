@@ -17,7 +17,7 @@ function statusClass(value: string) {
   if (["Delivered", "Paid", "Completed", "Approved"].includes(value)) {
     return "bg-emerald-500/10 text-emerald-700";
   }
-  if (["Pending approval", "Pending", "Requested", "Processing"].includes(value)) {
+  if (["Pending approval", "Pending", "Verification pending", "Requested", "Processing"].includes(value)) {
     return "bg-amber-500/12 text-amber-800";
   }
   return "bg-secondary text-muted-foreground";
@@ -132,6 +132,12 @@ export default function UserDashboard() {
                       .join(", ")}
                   </p>
 
+                  {order.paymentReference && (
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      UPI reference: <span className="font-semibold text-foreground">{order.paymentReference}</span>
+                    </p>
+                  )}
+
                   <div className="mt-4 flex flex-wrap gap-2">
                     <span
                       className={`rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.09em] ${statusClass(order.status)}`}
@@ -187,7 +193,7 @@ export default function UserDashboard() {
               Payment status
             </h2>
             <p className="mt-2 text-sm leading-6 opacity-70">
-              {myOrders.filter((order) => order.paymentStatus === "Pending").length} pending
+              {myOrders.filter((order) => ["Pending", "Verification pending"].includes(order.paymentStatus)).length} pending
               payment(s), {myOrders.filter((order) => order.paymentStatus === "Paid").length} paid.
             </p>
           </section>
