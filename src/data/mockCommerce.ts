@@ -5,7 +5,12 @@ export type OrderStatus =
   | "Delivered"
   | "Cancelled";
 
-export type PaymentStatus = "Paid" | "Pending" | "Refunded";
+export type PaymentStatus =
+  | "Paid"
+  | "Pending"
+  | "Verification pending"
+  | "Refunded";
+
 export type RefundStatus = "None" | "Requested" | "Approved" | "Completed";
 
 export type OrderItem = {
@@ -24,9 +29,13 @@ export type StoreOrder = {
   status: OrderStatus;
   paymentStatus: PaymentStatus;
   refundStatus: RefundStatus;
+  paymentMethod?: "UPI QR";
+  paymentReference?: string;
   total: number;
   items: OrderItem[];
 };
+
+export type NewStoreOrder = Omit<StoreOrder, "placedAt" | "status" | "paymentStatus" | "refundStatus">;
 
 export const seedOrders: StoreOrder[] = [
   {
@@ -38,6 +47,8 @@ export const seedOrders: StoreOrder[] = [
     status: "Delivered",
     paymentStatus: "Paid",
     refundStatus: "None",
+    paymentMethod: "UPI QR",
+    paymentReference: "628194201847",
     total: 748,
     items: [
       { bookId: "p2", title: "The Curious Atlas of Animals", quantity: 1, price: 449 },
@@ -53,6 +64,8 @@ export const seedOrders: StoreOrder[] = [
     status: "Pending approval",
     paymentStatus: "Paid",
     refundStatus: "None",
+    paymentMethod: "UPI QR",
+    paymentReference: "629837112045",
     total: 349,
     items: [{ bookId: "p5", title: "The Moonlight Post Office", quantity: 1, price: 349 }],
   },
@@ -65,6 +78,8 @@ export const seedOrders: StoreOrder[] = [
     status: "Cancelled",
     paymentStatus: "Refunded",
     refundStatus: "Completed",
+    paymentMethod: "UPI QR",
+    paymentReference: "629947003812",
     total: 199,
     items: [{ bookId: "p3", title: "Colours of the Festival", quantity: 1, price: 199 }],
   },
@@ -92,6 +107,8 @@ export const seedOrders: StoreOrder[] = [
     status: "Processing",
     paymentStatus: "Paid",
     refundStatus: "Requested",
+    paymentMethod: "UPI QR",
+    paymentReference: "630112408799",
     total: 329,
     items: [{ bookId: "p9", title: "The River That Remembered", quantity: 1, price: 329 }],
   },

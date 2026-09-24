@@ -9,12 +9,14 @@ import {
 
 import {
   seedOrders,
+  type NewStoreOrder,
   type RefundStatus,
   type StoreOrder,
 } from "@/data/mockCommerce";
 
 type CommerceContextValue = {
   orders: StoreOrder[];
+  createOrder: (order: NewStoreOrder) => StoreOrder;
   approveOrder: (orderId: string) => void;
   advanceOrder: (orderId: string) => void;
   setRefundStatus: (orderId: string, status: RefundStatus) => void;
@@ -43,10 +45,25 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
   }, [orders]);
 
   const value = useMemo<CommerceContextValue>(() => {
-    const updateOrder = (orderId: string, updater: (order: StoreOrder) => StoreOrder) =>
+    const updateOrder = (
+      orderId: string,
+      updater: (order: StoreOrder) => StoreOrder,
+    ) =>
       setOrders((current) =>
         current.map((order) => (order.id === orderId ? updater(order) : order)),
       );
+
+    const createOrder = (order: NewStoreOrder) => {
+      const created: StoreOrder = {
+        ...order,
+        placedAt: new Date().toISOString().slice(0, 10),
+        status: "Pending approval",
+        paymentStatus: "Verification pending",
+        refundStatus: "None",
+      };
+      setOrders((current) => [created, ...current]);
+      return created;
+    };
 
     const approveOrder = (orderId: string) =>
       updateOrder(orderId, (order) => ({
@@ -78,6 +95,7 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
 
     return {
       orders,
+      createOrder,
       approveOrder,
       advanceOrder,
       setRefundStatus,
