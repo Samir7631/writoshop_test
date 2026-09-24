@@ -194,7 +194,9 @@ export default function AdminDashboard() {
                             onClick={() => markPaymentPaid(order.id)}
                             className="rounded-full border border-border px-3 py-2 text-[10px] font-black uppercase tracking-[0.08em]"
                           >
-                            Mark paid
+                            {order.paymentStatus === "Verification pending"
+                              ? "Verify payment"
+                              : "Mark paid"}
                           </button>
                         )}
                         {order.refundStatus === "Requested" && (
